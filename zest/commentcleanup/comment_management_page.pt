@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <title>Manage comments on this page (in a rather ugly way)</title>
+  </head>
+  <body>
+    <h1 tal:content="context/Title" />
+    <p><a tal:attributes="href context/absolute_url">View this page</a></p>
+    <div tal:define="info view/info">
+      <div>
+        <label>Number of comments:</label>
+        <span tal:content="info/count" />
+      </div>
+
+      <div>
+        <label>Comments allowed?</label>
+        <span tal:content="info/discussion_allowed" />
+        <form action=""
+              method="post"
+              style="display: inline;"
+              tal:attributes="action string:${context/absolute_url}/@@toggle-discussion">
+          <div>
+            <input class="context"
+                   type="submit"
+                   tal:condition="info/discussion_allowed"
+                   value="Switch off"
+                   />
+            <input class="context"
+                   type="submit"
+                   tal:condition="not:info/discussion_allowed"
+                   value="Turn on"
+                   />
+          </div>
+        </form>
+      </div>
+    </div>
+    <h2>Some notes</h2>
+    <ul>
+      <li>Commenting needs to be turned on when you want to delete a comment.</li>
+      <li>When you delete a reply you also delete all its nested replies.</li>
+      <li>You can click on Reply to see the complete text of the reply.</li>
+    </ul>
+    <tal:comments
+        define="comments view/comments|python:[];
+                Batch python:modules['Products.CMFPlone'].Batch;
+                b_start python:request.get('b_start', 0);
+                template_id string:@@manage-comments;
+                batch python:Batch(comments, 100, int(b_start))">
+    <table border="">
+      <thead>
+        <tr>
+          <td>Nr.</td>
+          <td>Title</td>
+          <td>Date</td>
+          <td>Reply</td>
+          <td>Remove</td>
+          <td>Remove lots (including any not shown)</td>
+        </tr>
+      </thead>
+      <tbody>
+      <tr tal:repeat="comment batch">
+        <td tal:content="repeat/comment/number" />
+        <td tal:content="comment/Title" />
+        <td tal:content="comment/created" />
+        <td>
+          <a tal:attributes="href string:${comment/getURL}/discussion_reply_form">Reply</a>
+        </td>
+        <td>
+          <form action=""
+                method="post"
+                style="display: inline;"
+                tal:attributes="action string:${context/absolute_url}/@@delete-comment">
+            <input type="hidden"
+                   name="comment_id"
+                   tal:attributes="value comment/getId" />
+            <div>
+              <input class="destructive"
+                     type="submit"
+                     value="Remove"
+                     />
+            </div>
+          </form>
+        </td>
+        <td>
+          <form action=""
+                method="post"
+                style="display: inline;"
+                tal:attributes="action string:${context/absolute_url}/@@delete-later-comments">
+            <input type="hidden"
+                   name="comment_id"
+                   tal:attributes="value comment/getId" />
+            <div>
+              <input class="destructive"
+                     type="submit"
+                     value="Remove this and all later comments"
+                     />
+            </div>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div metal:use-macro="here/batch_macros/macros/navigation" />
+    </tal:comments>
+  </body>
+</html>

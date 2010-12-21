@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Manage comments in your Plone Site (in a rather ugly way)</title>
+  </head>
+  <body>
+    <table border="">
+      <thead>
+        <tr>
+          <td>#Comments</td>
+          <td>Comments allowed?</td>
+          <td>Manage Comments</td>
+          <td>View</td>
+          <td>Title</td>
+        </tr>
+      </thead>
+      <tbody>
+      <tr tal:repeat="info view/paths">
+        <td tal:content="info/count" />
+        <td tal:content="info/discussion_allowed" />
+        <td><a tal:attributes="href string:${info/url}/@@manage-comments">manage</a></td>
+        <td><a tal:attributes="href string:${info/url}">view</a></td>
+        <td tal:content="info/title" />
+      </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

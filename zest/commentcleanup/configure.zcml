@@ -1,0 +1,46 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <!-- -*- extra stuff goes here -*- -->
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="manage-comments"
+      class=".comment_management.CommentManagement"
+      permission="cmf.ManagePortal"
+      template="comment_management_plone.pt"
+      />
+
+  <browser:page
+      for="*"
+      name="manage-comments"
+      class=".comment_management.CommentManagement"
+      permission="cmf.ManagePortal"
+      template="comment_management_page.pt"
+      />
+
+  <browser:page
+      for="*"
+      name="delete-comment"
+      class=".comment_management.DeleteComment"
+      permission="cmf.ManagePortal"
+      />
+
+  <browser:page
+      for="*"
+      name="delete-later-comments"
+      class=".comment_management.DeleteAllFollowingComments"
+      permission="cmf.ManagePortal"
+      />
+
+  <browser:page
+      for="*"
+      name="toggle-discussion"
+      class=".comment_management.ToggleDiscussion"
+      permission="cmf.ManagePortal"
+      />
+  
+</configure>
