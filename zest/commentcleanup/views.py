@@ -10,7 +10,7 @@ logger = logging.getLogger('zest.content')
 
 class CommentManagement(BrowserView):
 
-    def total_comments(self):
+    def num_total_comments(self):
         """Total number of comments from this point on, including
         children.
         """
@@ -50,11 +50,7 @@ class CommentManagement(BrowserView):
         """Info on this context.
         """
         context = aq_inner(self.context)
-        catalog = getToolByName(context, 'portal_catalog')
-        search_path = '/'.join(context.getPhysicalPath())
-        brains = catalog.searchResults(portal_type='Discussion Item',
-                                       path=search_path)
-        count = len(brains)
+        count = len(self.comments())
         discussion_allowed = self.is_discussion_allowed(context)
         return dict(
             count=count,

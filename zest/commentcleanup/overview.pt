@@ -9,7 +9,7 @@
       <span tal:content="python:len(view.paths())" />
       <br />
       <label>Total number of comments:</label>
-      <span tal:content="view/total_comments" />
+      <span tal:content="view/num_total_comments" />
     </p> 
     <table border="">
       <thead>
