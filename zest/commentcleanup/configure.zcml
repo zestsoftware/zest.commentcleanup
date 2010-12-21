@@ -8,7 +8,7 @@
   <!-- -*- extra stuff goes here -*- -->
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="manage-comments"
+      name="cleanup-comments"
       class=".views.CommentManagement"
       permission="cmf.ManagePortal"
       template="overview.pt"
@@ -16,7 +16,7 @@
 
   <browser:page
       for="*"
-      name="manage-comments"
+      name="cleanup-comments"
       class=".views.CommentManagement"
       permission="cmf.ManagePortal"
       template="manage.pt"
