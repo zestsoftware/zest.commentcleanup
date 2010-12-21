@@ -1,8 +1,16 @@
 <html>
   <head>
-    <title>Manage comments in your Plone Site (in a rather ugly way)</title>
+    <title>Manage comments in your site (in a rather ugly way)</title>
   </head>
   <body>
+    <h1>Overview of comments in your site</h1>
+    <p>
+      <label>Items containing comments:</label>
+      <span tal:content="python:len(view.paths())" />
+      <br />
+      <label>Total number of comments:</label>
+      <span tal:content="view/total_comments" />
+    </p> 
     <table border="">
       <thead>
         <tr>

@@ -10,16 +10,40 @@ logger = logging.getLogger('zest.content')
 
 class CommentManagement(BrowserView):
 
-    def comments(self):
-        """Comments on this context.
+    def total_comments(self):
+        """Total number of comments from this point on, including
+        children.
         """
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
         search_path = '/'.join(context.getPhysicalPath())
-        brains = catalog.searchResults(
+        filter = dict(
             portal_type='Discussion Item',
             path=search_path,
-            sort_on='created')
+            )
+        brains = catalog.searchResults(**filter)
+        return len(brains)
+
+    def comments(self):
+        """Comments on this context.
+
+        Note that we only want comments directly in this context, not
+        in any children in case folders can have comments.
+        """
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+        search_path = '/'.join(context.getPhysicalPath())
+        depth = len(context.getPhysicalPath()) - 1
+        path = dict(
+            query=search_path,
+            depth=depth,
+            )
+        filter = dict(
+            portal_type='Discussion Item',
+            path=path,
+            sort_on='created',
+            )
+        brains = catalog.searchResults(**filter)
         return brains
 
     def info(self):
