@@ -68,7 +68,7 @@
           <form action=""
                 method="post"
                 style="display: inline;"
-                tal:attributes="action string:${context/absolute_url}/@@delete-comment">
+                tal:attributes="action string:${context/absolute_url}/@@delete-single-comment">
             <input type="hidden"
                    name="comment_id"
                    tal:attributes="value comment/getId" />

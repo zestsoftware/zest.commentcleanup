@@ -24,7 +24,7 @@
 
   <browser:page
       for="*"
-      name="delete-comment"
+      name="delete-single-comment"
       class=".views.DeleteComment"
       permission="cmf.ManagePortal"
       />
