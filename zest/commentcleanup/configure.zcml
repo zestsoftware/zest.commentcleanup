@@ -9,37 +9,37 @@
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="manage-comments"
-      class=".comment_management.CommentManagement"
+      class=".views.CommentManagement"
       permission="cmf.ManagePortal"
-      template="comment_management_plone.pt"
+      template="overview.pt"
       />
 
   <browser:page
       for="*"
       name="manage-comments"
-      class=".comment_management.CommentManagement"
+      class=".views.CommentManagement"
       permission="cmf.ManagePortal"
-      template="comment_management_page.pt"
+      template="manage.pt"
       />
 
   <browser:page
       for="*"
       name="delete-comment"
-      class=".comment_management.DeleteComment"
+      class=".views.DeleteComment"
       permission="cmf.ManagePortal"
       />
 
   <browser:page
       for="*"
       name="delete-later-comments"
-      class=".comment_management.DeleteAllFollowingComments"
+      class=".views.DeleteAllFollowingComments"
       permission="cmf.ManagePortal"
       />
 
   <browser:page
       for="*"
       name="toggle-discussion"
-      class=".comment_management.ToggleDiscussion"
+      class=".views.ToggleDiscussion"
       permission="cmf.ManagePortal"
       />
   
