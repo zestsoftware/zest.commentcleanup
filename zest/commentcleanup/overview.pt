@@ -25,7 +25,7 @@
       <tr tal:repeat="info view/paths">
         <td tal:content="info/count" />
         <td tal:content="info/discussion_allowed" />
-        <td><a tal:attributes="href string:${info/url}/@@cleanup-comments">manage</a></td>
+        <td><a tal:attributes="href string:${info/url}/@@cleanup-comments-details">manage</a></td>
         <td><a tal:attributes="href string:${info/url}">view</a></td>
         <td tal:content="info/title" />
       </tr>

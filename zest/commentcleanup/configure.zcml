@@ -6,8 +6,8 @@
   <five:registerPackage package="." initialize=".initialize" />
 
   <browser:page
-      for="Products.CMFCore.interfaces.ISiteRoot"
-      name="cleanup-comments"
+      for="*"
+      name="cleanup-comments-overview"
       class=".views.CommentManagement"
       permission="cmf.ManagePortal"
       template="overview.pt"
@@ -15,10 +15,10 @@
 
   <browser:page
       for="*"
-      name="cleanup-comments"
+      name="cleanup-comments-details"
       class=".views.CommentManagement"
       permission="cmf.ManagePortal"
-      template="manage.pt"
+      template="details.pt"
       />
 
   <browser:page

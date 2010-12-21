@@ -132,7 +132,7 @@ class DeleteComment(BrowserView):
 
         # redirect to the manage comments view
         self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments')
+            context.absolute_url() + '/@@cleanup-comments-details')
         return u'Comment deleted'
 
 
@@ -173,7 +173,7 @@ class DeleteAllFollowingComments(CommentManagement):
 
         # redirect to the manage comments view
         self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments')
+            context.absolute_url() + '/@@cleanup-comments-details')
         return u'Lots of comments deleted!'
 
 
@@ -190,5 +190,5 @@ class ToggleDiscussion(CommentManagement):
             context.allowDiscussion(True)
         # redirect to the manage comments view
         self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments')
+            context.absolute_url() + '/@@cleanup-comments-details')
         return u'Toggled allowDiscussion.'

@@ -43,7 +43,7 @@
         define="comments view/comments|python:[];
                 Batch python:modules['Products.CMFPlone'].Batch;
                 b_start python:request.get('b_start', 0);
-                template_id string:@@cleanup-comments;
+                template_id string:@@cleanup-comments-details;
                 batch python:Batch(comments, 100, int(b_start))">
     <table border="">
       <thead>
