@@ -45,7 +45,7 @@
                 b_start python:request.get('b_start', 0);
                 template_id string:@@cleanup-comments-details;
                 batch python:Batch(comments, 100, int(b_start))">
-    <table border="">
+    <table border="" tal:condition="batch">
       <thead>
         <tr>
           <td>Nr.</td>
