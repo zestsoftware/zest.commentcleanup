@@ -5,9 +5,8 @@
 
   <five:registerPackage package="." initialize=".initialize" />
 
-  <!-- -*- extra stuff goes here -*- -->
   <browser:page
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      for="Products.CMFCore.interfaces.ISiteRoot"
       name="cleanup-comments"
       class=".views.CommentManagement"
       permission="cmf.ManagePortal"
