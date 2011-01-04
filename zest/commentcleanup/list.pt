@@ -48,7 +48,7 @@
                    tal:attributes="value comment/getId" />
             <input type="hidden"
                    name="came_from"
-                   tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-list" />
+                   tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-list?b_start=${b_start}" />
             <div>
               <input class="destructive"
                      type="submit"
