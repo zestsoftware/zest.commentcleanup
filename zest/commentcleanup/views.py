@@ -126,9 +126,17 @@ class DeleteComment(BrowserView):
         logger.info("Deleted reply %s from %s", comment_id,
                     context.absolute_url())
 
-        # redirect to the manage comments view
-        self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments-details')
+        # Should we redirect to the details page of the current
+        # context or to the list page of the site?  We handle that
+        # with a came_from parameter with a fallback.
+        portal_url = getToolByName(context, 'portal_url')
+        came_from = self.request.get('came_from')
+        if came_from and portal_url.isURLInPortal(came_from):
+            self.request.RESPONSE.redirect(came_from)
+        else:
+            # redirect to the manage comments view
+            self.request.RESPONSE.redirect(
+                context.absolute_url() + '/@@cleanup-comments-details')
         return u'Comment deleted'
 
 
@@ -188,3 +196,35 @@ class ToggleDiscussion(CommentManagement):
         self.request.RESPONSE.redirect(
             context.absolute_url() + '/@@cleanup-comments-details')
         return u'Toggled allowDiscussion.'
+
+
+class CommentList(BrowserView):
+
+    def comments(self):
+        """Latest comments from this point on, including children.
+        """
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+        search_path = '/'.join(context.getPhysicalPath())
+        filter = dict(
+            portal_type='Discussion Item',
+            path=search_path,
+            )
+        results = []
+        for brain in catalog.searchResults(**filter):
+            # This is rather ugly, but it works for standard comments
+            # in Plone 3.3 and 4.0:
+            comment_url = brain.getURL()
+            comment_path = brain.getPath()
+            context_url = '/'.join(comment_url.split('/')[:-2])
+            context_path = '/'.join(comment_path.split('/')[:-2])
+            context_obj = context.restrictedTraverse(context_path)
+            info = dict(
+                brain=brain,
+                reply_url=comment_url + '/discussion_reply_form',
+                context_url=context_url,
+                context_title=context_obj.Title(),
+                delete_url=context_url + '/@@delete-single-comment',
+                )
+            results.append(info)
+        return results

@@ -10,6 +10,11 @@
       <br />
       <label>Total number of comments:</label>
       <span tal:content="view/num_total_comments" />
+      <br />
+      <label>Latest comments:</label>
+      <a tal:attributes="href string:${context/absolute_url}/@@cleanup-comments-list">
+        Go to list of latest comments
+      </a>
     </p> 
     <table border="">
       <thead>

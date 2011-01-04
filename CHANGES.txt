@@ -4,7 +4,8 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added '@@cleanup-comments-list' page that lists the latest comments.
+  [maurits]
 
 
 1.0 (2010-12-21)

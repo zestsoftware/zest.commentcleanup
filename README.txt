@@ -39,6 +39,12 @@ somewhere in that spam flood anymore. So you keep the first few
 comments and delete the rest without having to buy a new mouse because
 you have clicked too much.
 
+From the overview page you can also go to the
+``@@cleanup-comments-list`` page.  Here you see the latest comments,
+which you can remove one at a time.  This is handier when you have
+done the big cleanup already and only need to check the new comments
+of the last few days.
+
 All the used views are only available if you have the ``Manage
 portal`` permission.
 

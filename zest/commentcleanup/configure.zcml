@@ -42,4 +42,12 @@
       permission="cmf.ManagePortal"
       />
   
+  <browser:page
+      for="*"
+      name="cleanup-comments-list"
+      class=".views.CommentList"
+      permission="cmf.ManagePortal"
+      template="list.pt"
+      />
+
 </configure>

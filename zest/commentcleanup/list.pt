@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Manage latest comments (in a rather ugly way)</title>
+  </head>
+  <body>
+    <h1>List of comments in your site</h1>
+    <h2>Some notes</h2>
+    <ul>
+      <li>Commenting needs to be turned on when you want to delete a comment.</li>
+      <li>When you delete a reply you also delete all its nested replies.</li>
+      <li>You can click on Reply to see the complete text of the reply.</li>
+    </ul>
+    <tal:comments
+        define="comments view/comments|python:[];
+                Batch python:modules['Products.CMFPlone'].Batch;
+                b_start python:request.get('b_start', 0);
+                template_id string:@@cleanup-comments-list;
+                batch python:Batch(comments, 10, int(b_start))">
+    <table border="" tal:condition="batch">
+      <thead>
+        <tr>
+          <td>Title</td>
+          <td>Date</td>
+          <td>Context</td>
+          <td>Reply</td>
+          <td>Remove</td>
+        </tr>
+      </thead>
+      <tbody>
+      <tr tal:repeat="info batch">
+        <tal:item define="comment info/brain">
+        <td tal:content="comment/Title" />
+        <td tal:content="comment/created" />
+        <td>
+          <a tal:attributes="href info/context_url"
+             tal:content="info/context_title" />
+        </td>
+        <td>
+          <a tal:attributes="href info/reply_url">Reply</a>
+        </td>
+        <td>
+          <form action=""
+                method="post"
+                style="display: inline;"
+                tal:attributes="action info/delete_url">
+            <input type="hidden"
+                   name="comment_id"
+                   tal:attributes="value comment/getId" />
+            <input type="hidden"
+                   name="came_from"
+                   tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-list" />
+            <div>
+              <input class="destructive"
+                     type="submit"
+                     value="Remove"
+                     />
+            </div>
+          </form>
+        </td>
+        </tal:item>
+      </tr>
+      </tbody>
+    </table>
+    <div metal:use-macro="here/batch_macros/macros/navigation" />
+    </tal:comments>
+  </body>
+</html>
