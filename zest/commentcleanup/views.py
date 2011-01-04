@@ -212,6 +212,7 @@ class CommentList(BrowserView):
         filter = dict(
             portal_type='Discussion Item',
             path=search_path,
+            sort_on='created',
             )
         results = []
         for brain in catalog.searchResults(**filter):
