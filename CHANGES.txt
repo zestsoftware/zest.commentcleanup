@@ -4,6 +4,10 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Handle redirection in the same way everywhere, so you also get to
+  the same batched page using a came_from parameter.
+  [maurits]
+
 - Added '@@cleanup-comments-list' page that lists the latest comments.
   [maurits]
 

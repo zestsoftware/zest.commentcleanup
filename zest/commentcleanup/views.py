@@ -10,6 +10,23 @@ logger = logging.getLogger('zest.content')
 
 class CommentManagement(BrowserView):
 
+    def redirect(self):
+        """Redirect.
+
+        Should we redirect to the details page of the current context
+        or to the list page of the site or something else?  We handle
+        that with a came_from parameter with a fallback.
+        """
+        context = aq_inner(self.context)
+        portal_url = getToolByName(context, 'portal_url')
+        came_from = self.request.get('came_from')
+        if came_from and portal_url.isURLInPortal(came_from):
+            self.request.RESPONSE.redirect(came_from)
+        else:
+            # Redirect to the manage comments view on the current context
+            self.request.RESPONSE.redirect(
+                context.absolute_url() + '/@@cleanup-comments-details')
+
     def num_total_comments(self):
         """Total number of comments from this point on, including
         children.
@@ -105,7 +122,7 @@ class CommentManagement(BrowserView):
         return results
 
 
-class DeleteComment(BrowserView):
+class DeleteComment(CommentManagement):
 
     def __call__(self):
         """Delete a comment/reply/reaction.
@@ -126,17 +143,7 @@ class DeleteComment(BrowserView):
         logger.info("Deleted reply %s from %s", comment_id,
                     context.absolute_url())
 
-        # Should we redirect to the details page of the current
-        # context or to the list page of the site?  We handle that
-        # with a came_from parameter with a fallback.
-        portal_url = getToolByName(context, 'portal_url')
-        came_from = self.request.get('came_from')
-        if came_from and portal_url.isURLInPortal(came_from):
-            self.request.RESPONSE.redirect(came_from)
-        else:
-            # redirect to the manage comments view
-            self.request.RESPONSE.redirect(
-                context.absolute_url() + '/@@cleanup-comments-details')
+        self.redirect()
         return u'Comment deleted'
 
 
@@ -175,9 +182,7 @@ class DeleteAllFollowingComments(CommentManagement):
             logger.info("Deleted reply %s from %s", comment.getId,
                         context.absolute_url())
 
-        # redirect to the manage comments view
-        self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments-details')
+        self.redirect()
         return u'Lots of comments deleted!'
 
 
@@ -192,9 +197,7 @@ class ToggleDiscussion(CommentManagement):
             context.allowDiscussion(False)
         else:
             context.allowDiscussion(True)
-        # redirect to the manage comments view
-        self.request.RESPONSE.redirect(
-            context.absolute_url() + '/@@cleanup-comments-details')
+        self.redirect()
         return u'Toggled allowDiscussion.'
 
 

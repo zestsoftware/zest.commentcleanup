@@ -72,6 +72,9 @@
             <input type="hidden"
                    name="comment_id"
                    tal:attributes="value comment/getId" />
+            <input type="hidden"
+                   name="came_from"
+                   tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-details?b_start=${b_start}" />
             <div>
               <input class="destructive"
                      type="submit"
@@ -88,6 +91,9 @@
             <input type="hidden"
                    name="comment_id"
                    tal:attributes="value comment/getId" />
+            <input type="hidden"
+                   name="came_from"
+                   tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-details?b_start=${b_start}" />
             <div>
               <input class="destructive"
                      type="submit"
