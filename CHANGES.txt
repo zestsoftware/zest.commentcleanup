@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1 (unreleased)
+1.1 (2011-01-04)
 ----------------
 
 - Handle redirection in the same way everywhere, so you also get to
