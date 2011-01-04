@@ -213,6 +213,7 @@ class CommentList(BrowserView):
             portal_type='Discussion Item',
             path=search_path,
             sort_on='created',
+            sort_order='reverse'
             )
         results = []
         for brain in catalog.searchResults(**filter):
