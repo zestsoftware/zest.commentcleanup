@@ -9,8 +9,11 @@
     <p><a tal:attributes="href context/absolute_url">View this page</a></p>
     <div tal:define="info view/info">
       <div>
-        <label>Number of comments:</label>
+        <label>Number of comments in catalog:</label>
         <span tal:content="info/count" />
+        <br />
+        <label>Number of actual comments:</label>
+        <span tal:content="view/actual_comment_count" />
       </div>
 
       <div>
@@ -31,6 +34,9 @@
                    tal:condition="not:info/discussion_allowed"
                    value="Turn on"
                    />
+            <span style="font-size: 90%" tal:condition="not:info/discussion_allowed">
+              (This may reindex current comments on this item.)
+            </span>
           </div>
         </form>
       </div>

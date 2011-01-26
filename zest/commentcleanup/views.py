@@ -1,5 +1,6 @@
 import logging
 from Acquisition import aq_inner
+from Acquisition import aq_base
 from plone.protect import PostOnly
 from zope.component import getMultiAdapter
 from Products.CMFCore.utils import getToolByName
@@ -29,9 +30,24 @@ class CommentManagement(BrowserView):
             self.request.RESPONSE.redirect(
                 context.absolute_url() + '/@@cleanup-comments-details')
 
+    def actual_comment_count(self):
+        """Count the actual comments on this context, not the comments
+        in the catalog.
+        """
+        context = aq_inner(self.context)
+        portal_discussion = getToolByName(context, 'portal_discussion')
+        try:
+            talkback = portal_discussion.getDiscussionFor(context)
+        except DiscussionNotAllowed:
+            # Try anyway:
+            if not hasattr(aq_base(context), 'talkback'):
+                return 0
+            talkback = getattr(context, 'talkback')
+        return len(talkback.objectIds())
+
     def num_total_comments(self):
         """Total number of comments from this point on, including
-        children.
+        children, in the catalog.
         """
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
@@ -194,6 +210,8 @@ class ToggleDiscussion(CommentManagement):
 
     def __call__(self):
         """Allow or disallow discussion on this context.
+
+        This may also (re)catalog the comments on this context.
         """
         PostOnly(self.request)
         context = aq_inner(self.context)
@@ -201,10 +219,40 @@ class ToggleDiscussion(CommentManagement):
             context.allowDiscussion(False)
         else:
             context.allowDiscussion(True)
+            self.catalog_comments(self)
         self.redirect()
         msg = u'Toggled allowDiscussion.'
         IStatusMessage(self.request).addStatusMessage(msg, type='info')
         return msg
+
+    def catalog_comments(self, force=False):
+        """Catalog the comments of this object.
+
+        When force=True, we force this, otherwise we check if the
+        number of items currently in the catalog under this context is
+        the same as the number of actual comments on the context.
+
+        This check does not work well for folderish items, so they
+        probably always get recataloged, but that is of small concern.
+        """
+        context = aq_inner(self.context)
+        portal_discussion = getToolByName(context, 'portal_discussion')
+        talkback = portal_discussion.getDiscussionFor(context)
+        ids = talkback.objectIds()
+        if not ids:
+            return
+
+        search_path = '/'.join(context.getPhysicalPath())
+        catalog = getToolByName(context, 'portal_catalog')
+        brains = catalog.searchResults(portal_type='Discussion Item',
+                                       path=search_path)
+
+        if len(brains) != len(ids) or force:
+            logger.info("Cataloging %s replies for obj at %s", len(ids),
+                        context.absolute_url())
+            for reply_id in ids:
+                reply = talkback.getReply(reply_id)
+                reply.reindexObject()
 
 
 class CommentList(BrowserView):
