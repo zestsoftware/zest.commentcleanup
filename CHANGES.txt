@@ -4,7 +4,9 @@ Changelog
 1.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Also catch AttributeError in @@find-catalog-comments, which may
+  happen for objects in portal_skins/custom.
+  [maurits]
 
 
 1.3 (2011-01-26)

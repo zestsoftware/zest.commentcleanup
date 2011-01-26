@@ -349,10 +349,10 @@ class FindAndCatalogComments(CommentManagement):
             """
             try:
                 talkback = self.portal_discussion.getDiscussionFor(obj)
-            except TypeError:
-                # Happens at least for the 'portal_types' object.
-                logger.debug("TypeError getting discussion for obj at %s",
-                             path)
+            except (TypeError, AttributeError):
+                # Happens for the 'portal_types' object and for
+                # objects in portal_skins/custom.
+                logger.debug("Error getting discussion for obj at %s", path)
                 return
             except DiscussionNotAllowed:
                 logger.debug("Discussion not allowed for obj at %s", path)
