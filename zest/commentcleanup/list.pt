@@ -25,25 +25,16 @@
     <table border="" tal:condition="batch">
       <thead>
         <tr>
+          <td>Remove</td>
           <td>Title</td>
           <td>Date</td>
           <td>Context</td>
           <td>Reply</td>
-          <td>Remove</td>
         </tr>
       </thead>
       <tbody>
       <tr tal:repeat="info batch">
         <tal:item define="comment info/brain">
-        <td tal:content="comment/Title" />
-        <td tal:content="comment/created" />
-        <td>
-          <a tal:attributes="href info/context_url"
-             tal:content="info/context_title" />
-        </td>
-        <td>
-          <a tal:attributes="href info/reply_url">Reply</a>
-        </td>
         <td>
           <form action=""
                 method="post"
@@ -55,13 +46,20 @@
             <input type="hidden"
                    name="came_from"
                    tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-list?b_start=${b_start}" />
-            <div>
-              <input class="destructive"
-                     type="submit"
-                     value="Remove"
-                     />
-            </div>
+            <input class="destructive"
+                   type="submit"
+                   value="Remove"
+                   />
           </form>
+        </td>
+        <td tal:content="comment/Title" />
+        <td tal:content="comment/created" />
+        <td>
+          <a tal:attributes="href info/context_url"
+             tal:content="info/context_title" />
+        </td>
+        <td>
+          <a tal:attributes="href info/reply_url">Reply</a>
         </td>
         </tal:item>
       </tr>

@@ -4,6 +4,11 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Moved the remove-buttons more the the left, so they do not hop
+  around after deleting an item with a long title, or that causes a
+  new long title to appear.
+  [maurits]
+
 - On the overview page offer to also index comments in objects that
   currently do not allow comments but may have done so in the past.
   [maurits]

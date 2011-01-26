@@ -58,21 +58,16 @@
       <thead>
         <tr>
           <td>Nr.</td>
+          <td>Remove</td>
+          <td>Remove lots (including any not shown)</td>
           <td>Title</td>
           <td>Date</td>
           <td>Reply</td>
-          <td>Remove</td>
-          <td>Remove lots (including any not shown)</td>
         </tr>
       </thead>
       <tbody>
       <tr tal:repeat="comment batch">
         <td tal:content="repeat/comment/number" />
-        <td tal:content="comment/Title" />
-        <td tal:content="comment/created" />
-        <td>
-          <a tal:attributes="href string:${comment/getURL}/discussion_reply_form">Reply</a>
-        </td>
         <td>
           <form action=""
                 method="post"
@@ -110,6 +105,11 @@
                      />
             </div>
           </form>
+        </td>
+        <td tal:content="comment/Title" />
+        <td tal:content="comment/created" />
+        <td>
+          <a tal:attributes="href string:${comment/getURL}/discussion_reply_form">Reply</a>
         </td>
       </tr>
       </tbody>
