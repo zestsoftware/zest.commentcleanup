@@ -4,7 +4,11 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- When switching comments on for an object, catalog its possibly
+- When switching comments off for an object, uncatalog its existing
+  comments.
+  [maurits]
+
+- When turning comments on for an object, catalog its possibly
   already existing comments, when needed.
   [maurits]
 

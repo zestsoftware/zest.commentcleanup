@@ -216,10 +216,11 @@ class ToggleDiscussion(CommentManagement):
         PostOnly(self.request)
         context = aq_inner(self.context)
         if context.isDiscussable():
+            self.uncatalog_comments()
             context.allowDiscussion(False)
         else:
             context.allowDiscussion(True)
-            self.catalog_comments(self)
+            self.catalog_comments()
         self.redirect()
         msg = u'Toggled allowDiscussion.'
         IStatusMessage(self.request).addStatusMessage(msg, type='info')
@@ -253,6 +254,29 @@ class ToggleDiscussion(CommentManagement):
             for reply_id in ids:
                 reply = talkback.getReply(reply_id)
                 reply.reindexObject()
+
+    def uncatalog_comments(self):
+        """Uncatalog the comments of this object.
+        """
+        context = aq_inner(self.context)
+        portal_discussion = getToolByName(context, 'portal_discussion')
+        talkback = portal_discussion.getDiscussionFor(context)
+        ids = talkback.objectIds()
+        if not ids:
+            return
+
+        search_path = '/'.join(context.getPhysicalPath())
+        catalog = getToolByName(context, 'portal_catalog')
+        brains = catalog.searchResults(portal_type='Discussion Item',
+                                       path=search_path)
+
+        if brains:
+            # Yes, there are comments in the catalog.
+            logger.info("Uncataloging %s replies for obj at %s", len(ids),
+                        context.absolute_url())
+            for reply_id in ids:
+                reply = talkback.getReply(reply_id)
+                reply.unindexObject()
 
 
 class CommentList(BrowserView):

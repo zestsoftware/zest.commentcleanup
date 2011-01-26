@@ -34,8 +34,8 @@
                    tal:condition="not:info/discussion_allowed"
                    value="Turn on"
                    />
-            <span style="font-size: 90%" tal:condition="not:info/discussion_allowed">
-              (This may reindex current comments on this item.)
+            <span style="font-size: 90%">
+              (This may index or unindex current comments on this item.)
             </span>
           </div>
         </form>
@@ -46,6 +46,7 @@
       <li>Commenting needs to be turned on when you want to delete a comment.</li>
       <li>When you delete a reply you also delete all its nested replies.</li>
       <li>You can click on Reply to see the complete text of the reply.</li>
+      <li>There may be a difference between the number of comments in the catalog and the comments actually on this object.</li>
     </ul>
     <tal:comments
         define="comments view/comments|python:[];
