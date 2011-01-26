@@ -16,6 +16,17 @@
         Go to list of latest comments
       </a>
     </p> 
+    <div>
+      <label>Recatalog comments:</label><br />
+      <span>Find and catalog all comments:</span>
+      <form method="post" action="@@find-catalog-comments" style="display: inline">
+        <input type="submit" name="submit" value="Submit" />
+      </form>
+      <span>This may take a long time.</span>
+      <br />
+      <span>Note: this does not look index comments in objects that currently do not allow comments but may have done so in the past.</span>
+    </div>
+    <br />
     <table border="">
       <thead>
         <tr>
@@ -29,7 +40,9 @@
       <tbody>
       <tr tal:repeat="info view/paths">
         <td tal:content="info/count" />
-        <td tal:content="info/discussion_allowed" />
+        <td tal:define="color python:info['discussion_allowed'] and 'green' or 'red'"
+            tal:attributes="style string:color: ${color}"
+            tal:content="info/discussion_allowed" />
         <td><a tal:attributes="href string:${info/url}/@@cleanup-comments-details">manage</a></td>
         <td><a tal:attributes="href string:${info/url}">view</a></td>
         <td tal:content="info/title" />

@@ -3,6 +3,7 @@ from Acquisition import aq_inner
 from plone.protect import PostOnly
 from zope.component import getMultiAdapter
 from Products.CMFCore.utils import getToolByName
+from Products.CMFDefault.exceptions import DiscussionNotAllowed
 from Products.Five import BrowserView
 
 logger = logging.getLogger('zest.content')
@@ -89,8 +90,6 @@ class CommentManagement(BrowserView):
 
     def paths(self):
         context = aq_inner(self.context)
-        portal_url_tool = getToolByName(context, 'portal_url')
-        portal_url = portal_url_tool()
         catalog = getToolByName(context, 'portal_catalog')
         search_path = '/'.join(context.getPhysicalPath())
         brains = catalog.searchResults(portal_type='Discussion Item',
@@ -114,7 +113,7 @@ class CommentManagement(BrowserView):
             info = dict(
                 count=count,
                 path=path,
-                url=portal_url + path,
+                url=obj.absolute_url(),
                 title=obj.Title(),
                 discussion_allowed=self.is_discussion_allowed(obj),
                 )
@@ -233,3 +232,56 @@ class CommentList(BrowserView):
                 )
             results.append(info)
         return results
+
+
+class FindAndCatalogComments(BrowserView):
+    """Find and catalog all comments.
+
+    If we clear and rebuild the portal_catalog, no comments
+    (DiscussionItems) will be left in the catalog.  They will still
+    exist in the site as normal content though.  But clear-and-rebuild
+    does not find them.  That is where this view comes in handy.
+    """
+
+    def __call__(self):
+        """Go through the site and catalog all comments.
+        """
+        PostOnly(self.request)
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+        start = len(catalog.searchResults(portal_type='Discussion Item'))
+        self.find()
+        end = len(catalog.searchResults(portal_type='Discussion Item'))
+        return u"Comments at start: %d, at end: %d" % (start, end)
+
+    def find(self):
+        """Find sites with local site hooks and put them in self.found_sites.
+        """
+        context = aq_inner(self.context)
+        self.portal_discussion = getToolByName(context, 'portal_discussion')
+
+        def update_comments(obj, path):
+            """Update the comments of this object
+            """
+            try:
+                talkback = self.portal_discussion.getDiscussionFor(obj)
+            except DiscussionNotAllowed:
+                logger.debug("Discussion not allowed for obj at %s", path)
+                return
+            except TypeError:
+                # Happens at least for the 'portal_types' object.
+                logger.debug("TypeError getting discussion for obj at %s",
+                             path)
+                return
+            ids = talkback.objectIds()
+            if ids:
+                logger.info("%s replies found for obj at %s", len(ids), path)
+                for reply_id in ids:
+                    reply = talkback.getReply(reply_id)
+                    reply.reindexObject()
+
+        logger.info("Finding and cataloging comments. "
+                    "This can take a while...")
+        context.ZopeFindAndApply(context, apply_func=update_comments,
+                                 search_sub=True)
+        logger.info("Ready finding and cataloging comments.")

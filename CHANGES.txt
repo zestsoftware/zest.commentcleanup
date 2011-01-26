@@ -4,7 +4,11 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added @@find-catalog-comments page (linked from the overview page)
+  that finds and catalogs all comments for objects that currently
+  allow commenting.  This is needed after a clear and rebuild of the
+  portal_catalog, as the catalog then loses all info about comments.
+  [maurits]
 
 
 1.2 (2011-01-04)

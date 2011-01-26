@@ -50,4 +50,11 @@
       template="list.pt"
       />
 
+  <browser:page
+      for="*"
+      name="find-catalog-comments"
+      class=".views.FindAndCatalogComments"
+      permission="cmf.ManagePortal"
+      />
+
 </configure>
