@@ -19,17 +19,19 @@
       </a>
     </p> 
     <div>
-      <label>Recatalog comments:</label><br />
-      <span>Find and catalog all comments:</span>
-      <form method="post" action="@@find-catalog-comments" style="display: inline">
-        <input type="hidden"
-               name="came_from"
-               tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-overview" />
-        <input type="submit" name="submit" value="Submit" />
-      </form>
-      <span>This may take a long time.</span>
-      <br />
-      <span>Note: this does not look index comments in objects that currently do not allow comments but may have done so in the past.</span>
+      <fieldset>
+        <legend>Find and catalog all comments</legend>
+        <span>This may take a long time.</span><br />
+        <form method="post" action="@@find-catalog-comments" style="display: inline">
+          <input id="force" name="force" type="checkbox" />
+          <label for="force">Also index comments in objects that currently do not allow comments but may have done so in the past.</label>
+          <br />
+          <input type="hidden"
+                 name="came_from"
+                 tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-overview" />
+          <input type="submit" name="submit" value="Submit" />
+        </form>
+      </fieldset>
     </div>
     <br />
     <table border="">

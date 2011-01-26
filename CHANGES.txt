@@ -4,6 +4,10 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- On the overview page offer to also index comments in objects that
+  currently do not allow comments but may have done so in the past.
+  [maurits]
+
 - When switching comments off for an object, uncatalog its existing
   comments.
   [maurits]

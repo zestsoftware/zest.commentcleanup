@@ -326,6 +326,7 @@ class FindAndCatalogComments(CommentManagement):
         """Go through the site and catalog all comments.
         """
         PostOnly(self.request)
+        self.force = self.request.get('force', False)
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
         start = len(catalog.searchResults(portal_type='Discussion Item'))
@@ -347,14 +348,21 @@ class FindAndCatalogComments(CommentManagement):
             """
             try:
                 talkback = self.portal_discussion.getDiscussionFor(obj)
-            except DiscussionNotAllowed:
-                logger.debug("Discussion not allowed for obj at %s", path)
-                return
             except TypeError:
                 # Happens at least for the 'portal_types' object.
                 logger.debug("TypeError getting discussion for obj at %s",
                              path)
                 return
+            except DiscussionNotAllowed:
+                logger.debug("Discussion not allowed for obj at %s", path)
+                if not self.force:
+                    return
+                # Try anyway:
+                if not hasattr(aq_base(obj), 'talkback'):
+                    return
+                talkback = getattr(obj, 'talkback')
+                logger.info("Discussion not allowed for obj, but forcing "
+                            "recatalog anyway at %s", path)
             ids = talkback.objectIds()
             if ids:
                 logger.info("%s replies found for obj at %s", len(ids), path)
