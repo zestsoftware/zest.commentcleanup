@@ -4,6 +4,7 @@ from plone.protect import PostOnly
 from zope.component import getMultiAdapter
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDefault.exceptions import DiscussionNotAllowed
+from Products.statusmessages.interfaces import IStatusMessage
 from Products.Five import BrowserView
 
 logger = logging.getLogger('zest.content')
@@ -143,7 +144,9 @@ class DeleteComment(CommentManagement):
                     context.absolute_url())
 
         self.redirect()
-        return u'Comment deleted'
+        msg = u'Comment deleted'
+        IStatusMessage(self.request).addStatusMessage(msg, type='info')
+        return msg
 
 
 class DeleteAllFollowingComments(CommentManagement):
@@ -182,7 +185,9 @@ class DeleteAllFollowingComments(CommentManagement):
                         context.absolute_url())
 
         self.redirect()
-        return u'Lots of comments deleted!'
+        msg = u'Lots of comments deleted!'
+        IStatusMessage(self.request).addStatusMessage(msg, type='info')
+        return msg
 
 
 class ToggleDiscussion(CommentManagement):
@@ -197,7 +202,9 @@ class ToggleDiscussion(CommentManagement):
         else:
             context.allowDiscussion(True)
         self.redirect()
-        return u'Toggled allowDiscussion.'
+        msg = u'Toggled allowDiscussion.'
+        IStatusMessage(self.request).addStatusMessage(msg, type='info')
+        return msg
 
 
 class CommentList(BrowserView):
@@ -234,7 +241,7 @@ class CommentList(BrowserView):
         return results
 
 
-class FindAndCatalogComments(BrowserView):
+class FindAndCatalogComments(CommentManagement):
     """Find and catalog all comments.
 
     If we clear and rebuild the portal_catalog, no comments
@@ -252,7 +259,10 @@ class FindAndCatalogComments(BrowserView):
         start = len(catalog.searchResults(portal_type='Discussion Item'))
         self.find()
         end = len(catalog.searchResults(portal_type='Discussion Item'))
-        return u"Comments at start: %d, at end: %d" % (start, end)
+        self.redirect()
+        msg = u"Comments at start: %d, at end: %d" % (start, end)
+        IStatusMessage(self.request).addStatusMessage(msg, type='info')
+        return msg
 
     def find(self):
         """Find sites with local site hooks and put them in self.found_sites.

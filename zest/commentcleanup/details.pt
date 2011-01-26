@@ -1,9 +1,11 @@
+<metal:block use-macro="here/global_defines/macros/defines" />
 <html>
   <head>
     <title>Manage comments on this page (in a rather ugly way)</title>
   </head>
   <body>
     <h1 tal:content="context/Title" />
+    <div metal:use-macro="here/global_statusmessage/macros/portal_message" />
     <p><a tal:attributes="href context/absolute_url">View this page</a></p>
     <div tal:define="info view/info">
       <div>

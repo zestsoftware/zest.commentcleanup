@@ -1,9 +1,11 @@
+<metal:block use-macro="here/global_defines/macros/defines" />
 <html>
   <head>
     <title>Manage comments in your site (in a rather ugly way)</title>
   </head>
   <body>
     <h1>Overview of comments in your site</h1>
+    <div metal:use-macro="here/global_statusmessage/macros/portal_message" />
     <p>
       <label>Items containing comments:</label>
       <span tal:content="python:len(view.paths())" />
@@ -20,6 +22,9 @@
       <label>Recatalog comments:</label><br />
       <span>Find and catalog all comments:</span>
       <form method="post" action="@@find-catalog-comments" style="display: inline">
+        <input type="hidden"
+               name="came_from"
+               tal:attributes="value string:${context/absolute_url}/@@cleanup-comments-overview" />
         <input type="submit" name="submit" value="Submit" />
       </form>
       <span>This may take a long time.</span>
