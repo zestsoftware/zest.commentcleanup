@@ -3,11 +3,11 @@
   <head>
     <title>Manage comments on this page (in a rather ugly way)</title>
   </head>
-  <body>
+  <body tal:define="info view/info">
     <h1 tal:content="context/Title" />
     <div metal:use-macro="here/global_statusmessage/macros/portal_message" />
     <p><a tal:attributes="href context/absolute_url">View this page</a></p>
-    <div tal:define="info view/info">
+    <div>
       <div>
         <label>Number of comments in catalog:</label>
         <span tal:content="info/count" />
@@ -83,6 +83,7 @@
               <input class="destructive"
                      type="submit"
                      value="Remove"
+                     tal:attributes="disabled python:not info['discussion_allowed'] and 'disabled' or ''"
                      />
             </div>
           </form>
@@ -102,6 +103,7 @@
               <input class="destructive"
                      type="submit"
                      value="Remove this and all later comments"
+                     tal:attributes="disabled python:not info['discussion_allowed'] and 'disabled' or ''"
                      />
             </div>
           </form>
