@@ -49,6 +49,7 @@
             <input class="destructive"
                    type="submit"
                    value="Remove"
+                   tal:attributes="disabled python:not info['discussion_allowed'] and 'disabled' or ''"
                    />
           </form>
         </td>

@@ -279,7 +279,7 @@ class ToggleDiscussion(CommentManagement):
                 reply.unindexObject()
 
 
-class CommentList(BrowserView):
+class CommentList(CommentManagement):
 
     def comments(self):
         """Latest comments from this point on, including children.
@@ -308,6 +308,7 @@ class CommentList(BrowserView):
                 context_url=context_url,
                 context_title=context_obj.Title(),
                 delete_url=context_url + '/@@delete-single-comment',
+                discussion_allowed=self.is_discussion_allowed(context_obj),
                 )
             results.append(info)
         return results
