@@ -6,14 +6,14 @@ see that during the night some spammer has added 1337 comments in your
 site.  What do you do now?  Sure, you first shoot him and then you
 integrate some captcha solution, but you still have those 1337
 comments.  You do not want to click 1337 times on a delete button.
-Have no fear: ``zest.cleanupcomments`` will rescue you!  Or at least
+Have no fear: ``zest.commentcleanup`` will rescue you!  Or at least
 it will help you get rid of those spam comments faster.
 
 
 How does it work?
 -----------------
 
-Just add ``zest.cleanupcomments`` to the eggs parameter of the
+Just add ``zest.commentcleanup`` to the eggs parameter of the
 instance section of your buildout.cfg.  On Plone 3.2 or earlier add it
 to the zcml parameter as well.
 
