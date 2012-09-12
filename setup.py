@@ -6,7 +6,7 @@ setup(name='zest.commentcleanup',
       version=version,
       description="Quickly remove lots of spam comments from your Plone Site",
       long_description=open("README.txt").read() + "\n" +
-                       open('CHANGES.txt').read(),
+                       open('CHANGES.rst').read(),
       # Get more strings from
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
