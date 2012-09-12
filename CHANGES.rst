@@ -1,10 +1,11 @@
 Changelog
 =========
 
-1.5 (unreleased)
+1.5 (2012-09-12)
 ----------------
 
-- Nothing changed yet.
+- Moved to github.
+  [maurits]
 
 
 1.4 (2011-01-26)
