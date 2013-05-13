@@ -203,6 +203,7 @@ class DeleteAllFollowingComments(CommentManagement):
         context = aq_inner(self.context)
         portal_discussion = getToolByName(context, 'portal_discussion')
         talkback = portal_discussion.getDiscussionFor(context)
+        conversation = None
         if IConversation is not None:
             conversation = IConversation(context, None)
 
