@@ -4,7 +4,8 @@ Changelog
 1.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Support plone.app.discussion.
+  [maurits]
 
 
 1.5 (2012-09-12)

@@ -8,6 +8,12 @@ from Products.CMFDefault.exceptions import DiscussionNotAllowed
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.Five import BrowserView
 
+try:
+    from plone.app.discussion.interfaces import IConversation
+    IConversation  # pyflakes
+except ImportError:
+    IConversation = None
+
 logger = logging.getLogger('zest.content')
 
 
@@ -35,6 +41,10 @@ class CommentManagement(BrowserView):
         in the catalog.
         """
         context = aq_inner(self.context)
+        if IConversation is not None:
+            conversation = IConversation(context, None)
+            if conversation is not None:
+                return len(conversation.objectIds())
         portal_discussion = getToolByName(context, 'portal_discussion')
         try:
             talkback = portal_discussion.getDiscussionFor(context)
@@ -85,7 +95,7 @@ class CommentManagement(BrowserView):
         """Info on this context.
         """
         context = aq_inner(self.context)
-        count = len(self.comments())
+        count = self.num_total_comments()
         discussion_allowed = self.is_discussion_allowed(context)
         return dict(
             count=count,
@@ -99,8 +109,13 @@ class CommentManagement(BrowserView):
         return portal.restrictedTraverse(path)
 
     def is_discussion_allowed(self, obj):
+        if IConversation is not None:
+            view = obj.restrictedTraverse('@@conversation_view', None)
+            if view is not None:
+                return view.enabled()
+        context = aq_inner(self.context)
         portal_discussion = getToolByName(
-            self.context, 'portal_discussion', None)
+            context, 'portal_discussion', None)
         if portal_discussion is None:
             return False
         return portal_discussion.isDiscussionAllowedFor(obj)
@@ -151,11 +166,17 @@ class DeleteComment(CommentManagement):
         if not comment_id:
             raise ValueError("comment_id expected")
         context = aq_inner(self.context)
-        portal_discussion = getToolByName(context, 'portal_discussion')
-        talkback = portal_discussion.getDiscussionFor(context)
-
-        # remove the discussion item
-        talkback.deleteReply(comment_id)
+        conversation = None
+        if IConversation is not None:
+            conversation = IConversation(context, None)
+            if conversation is not None:
+                del conversation[comment_id]
+                context.reindexObject()
+        if conversation is None:
+            portal_discussion = getToolByName(context, 'portal_discussion')
+            talkback = portal_discussion.getDiscussionFor(context)
+            # remove the discussion item
+            talkback.deleteReply(comment_id)
         logger.info("Deleted reply %s from %s", comment_id,
                     context.absolute_url())
 
@@ -182,6 +203,8 @@ class DeleteAllFollowingComments(CommentManagement):
         context = aq_inner(self.context)
         portal_discussion = getToolByName(context, 'portal_discussion')
         talkback = portal_discussion.getDiscussionFor(context)
+        if IConversation is not None:
+            conversation = IConversation(context, None)
 
         found = False
         # Note that getting the comment brains could result in a
@@ -196,10 +219,14 @@ class DeleteAllFollowingComments(CommentManagement):
                 continue
             # Remove the discussion item.  A no longer existing item
             # is silently ignored.
-            talkback.deleteReply(comment.getId)
+            if conversation is not None:
+                del conversation[comment.getId]
+            else:
+                talkback.deleteReply(comment.getId)
             logger.info("Deleted reply %s from %s", comment.getId,
                         context.absolute_url())
 
+        context.reindexObject()
         self.redirect()
         msg = u'Lots of comments deleted!'
         IStatusMessage(self.request).addStatusMessage(msg, type='info')
@@ -215,7 +242,7 @@ class ToggleDiscussion(CommentManagement):
         """
         PostOnly(self.request)
         context = aq_inner(self.context)
-        if context.isDiscussable():
+        if self.is_discussion_allowed(context):
             self.uncatalog_comments()
             context.allowDiscussion(False)
         else:
@@ -237,46 +264,46 @@ class ToggleDiscussion(CommentManagement):
         probably always get recataloged, but that is of small concern.
         """
         context = aq_inner(self.context)
+        actual= self.actual_comment_count()
+        if not actual:
+            return
+        in_catalog = self.num_total_comments()
+        if not force and actual == in_catalog:
+            return
+        logger.info("Cataloging %s replies for obj at %s", actual,
+                    context.absolute_url())
+
+        conversation = None
+        if IConversation is not None:
+            conversation = IConversation(context, None)
+            if conversation is not None:
+                for comment in conversation.getComments():
+                    comment.reindexObject()
+                return
+
         portal_discussion = getToolByName(context, 'portal_discussion')
         talkback = portal_discussion.getDiscussionFor(context)
         ids = talkback.objectIds()
-        if not ids:
-            return
-
-        search_path = '/'.join(context.getPhysicalPath())
-        catalog = getToolByName(context, 'portal_catalog')
-        brains = catalog.searchResults(portal_type='Discussion Item',
-                                       path=search_path)
-
-        if len(brains) != len(ids) or force:
-            logger.info("Cataloging %s replies for obj at %s", len(ids),
-                        context.absolute_url())
-            for reply_id in ids:
-                reply = talkback.getReply(reply_id)
-                reply.reindexObject()
+        for reply_id in ids:
+            reply = talkback.getReply(reply_id)
+            reply.reindexObject()
 
     def uncatalog_comments(self):
         """Uncatalog the comments of this object.
         """
         context = aq_inner(self.context)
-        portal_discussion = getToolByName(context, 'portal_discussion')
-        talkback = portal_discussion.getDiscussionFor(context)
-        ids = talkback.objectIds()
-        if not ids:
+        in_catalog = self.num_total_comments()
+        if not in_catalog:
             return
-
-        search_path = '/'.join(context.getPhysicalPath())
-        catalog = getToolByName(context, 'portal_catalog')
-        brains = catalog.searchResults(portal_type='Discussion Item',
-                                       path=search_path)
-
-        if brains:
-            # Yes, there are comments in the catalog.
-            logger.info("Uncataloging %s replies for obj at %s", len(ids),
-                        context.absolute_url())
-            for reply_id in ids:
-                reply = talkback.getReply(reply_id)
-                reply.unindexObject()
+        logger.info("Uncataloging %s replies for obj at %s", in_catalog,
+                    context.absolute_url())
+        for comment in self.comments():
+            try:
+                obj = comment.getObject()
+            except (KeyError, AttributeError):
+                logger.warn("Cannot find comment at %s", comment.getPath())
+            else:
+                obj.unindexObject()
 
 
 class CommentList(CommentManagement):
@@ -339,7 +366,7 @@ class FindAndCatalogComments(CommentManagement):
         return msg
 
     def find(self):
-        """Find sites with local site hooks and put them in self.found_sites.
+        """Find comments and catalog them.
         """
         context = aq_inner(self.context)
         self.portal_discussion = getToolByName(context, 'portal_discussion')
@@ -347,6 +374,12 @@ class FindAndCatalogComments(CommentManagement):
         def update_comments(obj, path):
             """Update the comments of this object
             """
+            if IConversation is not None:
+                conversation = IConversation(obj, None)
+                if conversation is not None:
+                    for comment in conversation.getComments():
+                        comment.reindexObject()
+                    return
             try:
                 talkback = self.portal_discussion.getDiscussionFor(obj)
             except (TypeError, AttributeError):
