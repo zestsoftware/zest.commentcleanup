@@ -45,7 +45,7 @@
     <ul>
       <li>Commenting needs to be turned on when you want to delete a comment.</li>
       <li>When you delete a reply you also delete all its nested replies.</li>
-      <li>You can click on Reply to see the complete text of the reply.</li>
+      <li>You can click on Reply to see the complete text of the reply, within the context.</li>
       <li>There may be a difference between the number of comments in the catalog and the comments actually on this object.</li>
     </ul>
     <tal:comments
@@ -111,7 +111,7 @@
         <td tal:content="comment/Title" />
         <td tal:content="comment/created" />
         <td>
-          <a tal:attributes="href string:${comment/getURL}/discussion_reply_form">Reply</a>
+          <a tal:attributes="href string:${comment/getURL}">Reply</a>
         </td>
       </tr>
       </tbody>
